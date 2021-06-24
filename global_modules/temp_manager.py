@@ -12,7 +12,7 @@ if not os.path.isdir(get_config("global.temp_dir")):
 
 def create_random_string(length: int = 32, contain_digits: bool = False) -> str:
     """
-    :param length: The length of the random screen
+    :param length: The length of the random string
     :param contain_digits: If set to True, the random string will contain digits
     :return: The random string
     """
