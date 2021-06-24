@@ -36,7 +36,7 @@ class Tray:
         menu_items = [
             MenuItem('PyMacro', lambda: None, enabled=False),
             MenuItem(menu_item, lambda: self.__toggle_activated()),
-            MenuItem('Open logs', lambda: subprocess.call(f"\"{os.getcwd()}\\latest.log\"", shell=True)),
+            MenuItem('Open logs', lambda: subprocess.Popen(f"\"{os.getcwd()}\\latest.log\"", shell=True)),
             MenuItem('Exit', self.__close)
         ]
 
