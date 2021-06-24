@@ -8,8 +8,8 @@ from tray import Tray
 try:
     psutil.Process().nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
 
-except:
-    pass
+except Exception as err:
+    print(type(err), err)
 # ======================================================================================================================
 
 
@@ -27,5 +27,6 @@ def purge_temp_loop():
 
 
 purge_temp(True)
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())

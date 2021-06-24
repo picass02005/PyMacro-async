@@ -1,5 +1,8 @@
 import asyncio
 import json
+import os
+import subprocess
+import sys
 
 import pystray
 from PIL import Image
@@ -29,9 +32,17 @@ class Tray:
             menu_item = 'Enable'
 
         image = Image.open(image)
-        menu = pystray.Menu(MenuItem('PyMacro', lambda: None, enabled=False),
-                            MenuItem(menu_item, lambda: self.__toggle_activated()),
-                            MenuItem('Exit', self.__close))
+        menu_items = [
+            MenuItem('PyMacro', lambda: None, enabled=False),
+            MenuItem(menu_item, lambda: self.__toggle_activated()),
+            MenuItem('Exit', self.__close)
+        ]
+
+        if sys.platform == "win32":
+            menu_items.insert(2, MenuItem('Open macros folder',
+                                          lambda: subprocess.call(f"explorer \"{os.getcwd()}\\macros\"", shell=True)))
+
+        menu = pystray.Menu(*tuple(menu_items))
 
         if self.icon is None:
             self.icon = pystray.Icon("PyMacro", image, "PyMacro - By picasso2005", menu)
