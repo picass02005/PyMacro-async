@@ -12,8 +12,9 @@ from global_modules import temp_manager
 
 
 class Tray:
-    def __init__(self):
+    def __init__(self, loop: asyncio.ProactorEventLoop):
         self.json_path = temp_manager.create_random_file(base_name="status", extension="json", time_=0)
+        self.loop = loop
 
         with open(self.json_path, "w") as f:
             f.write(json.dumps({'activated': True}, indent=4))
@@ -35,6 +36,7 @@ class Tray:
         menu_items = [
             MenuItem('PyMacro', lambda: None, enabled=False),
             MenuItem(menu_item, lambda: self.__toggle_activated()),
+            MenuItem('Open logs', lambda: subprocess.call(f"\"{os.getcwd()}\\latest.log\"", shell=True)),
             MenuItem('Exit', self.__close)
         ]
 
@@ -47,7 +49,7 @@ class Tray:
         if self.icon is None:
             self.icon = pystray.Icon("PyMacro", image, "PyMacro - By picasso2005", menu)
 
-            asyncio.get_event_loop().create_task(self.__coro_run())
+            self.icon.run()
 
         else:
             self.icon.icon = image
@@ -69,9 +71,6 @@ class Tray:
 
             self.create_tray(True)
 
-    async def __coro_run(self):
-        self.icon.run()
-
     def __close(self):
         self.icon.stop()
-        asyncio.get_event_loop().stop()
+        self.loop.stop()
