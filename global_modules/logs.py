@@ -1,3 +1,4 @@
+import sys
 import time
 
 from global_modules.get_config import get_config
@@ -14,14 +15,19 @@ def warn(module: str, log: str):
 
 
 def error(module: str, log: str):
-    __add_log(module, "ERROR", log)
+    __add_log(module, "ERROR", log, True)
 
 
-def __add_log(module: str, level: str, log: str):
+def __add_log(module: str, level: str, log: str, error_pipe: bool = False):
     log_ = f"[{time.strftime('%H:%M:%S')}] [{module}/{level}] {log}"
     with open(LOG_PATH, "a") as f:
         f.write(f"{log_}\n")
-    print(log_)
+
+    if not error_pipe:
+        print(log_)
+
+    else:
+        print(log_, file=sys.stderr)
 
 
 def clear_logs():
