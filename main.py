@@ -2,7 +2,7 @@ import asyncio
 import psutil
 
 from global_modules.temp_manager import purge_temp
-from tray import Tray
+from core_modules.tray import Tray
 
 # ================================= Set the program priority below normal if possible ==================================
 try:
@@ -12,21 +12,37 @@ except Exception as err:
     print(type(err), err)
 # ======================================================================================================================
 
+loop_ = asyncio.get_event_loop()
+tray = None
+
 
 async def main():
+    global tray
+
     purge_temp_loop()
 
-    Tray()
+    while True:
+        if isinstance(tray, Tray):
+            print(tray.enabled)
+            await asyncio.sleep(1)
+
+
+def create_tray(loop: asyncio.AbstractEventLoop):
+    global tray
+
+    tray = Tray(loop)
+    tray.run_tray()
 
 
 def purge_temp_loop():
     purge_temp()
 
-    loop_ = asyncio.get_event_loop()
-    loop_.call_later(60, purge_temp_loop)
+    loop = asyncio.get_running_loop()
+    loop.call_later(60, purge_temp_loop)
 
 
 purge_temp(True)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+loop_.run_in_executor(None, create_tray, loop_)
+loop_.create_task(main())
+loop_.run_forever()

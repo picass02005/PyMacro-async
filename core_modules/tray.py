@@ -1,76 +1,97 @@
 import asyncio
-import json
 import os
 import subprocess
 import sys
 
-import pystray
-from PIL import Image
-from pystray import MenuItem
-
-from global_modules import temp_manager
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class Tray:
-    def __init__(self, loop: asyncio.ProactorEventLoop):
-        self.json_path = temp_manager.create_random_file(base_name="status", extension="json", time_=0)
+    def __init__(self, loop: asyncio.AbstractEventLoop):
         self.loop = loop
 
-        with open(self.json_path, "w") as f:
-            f.write(json.dumps({'activated': True}, indent=4))
+        self.__app = QApplication([])
+        self.__app.setQuitOnLastWindowClosed(False)
+        self.__parent = QWidget()
+        self.__icon = QIcon("tray_image/tray_enabled.png")
 
-        self.icon = None
+        self.tray = QSystemTrayIcon(self.__icon, self.__parent)
+        self.tray.setToolTip("PyMacro")
 
-        self.create_tray(True)
+        self.enabled = True
 
-    def create_tray(self, enabled: bool):
+        self.__build_menu(enabled=True)
+
+        self.tray.setVisible(True)
+
+    def __build_menu(self, enabled: bool = True):
+        menu = QMenu(self.__parent)
+
+        item = QAction(self.__parent)
+        item.setText("PyMacro - By picasso2005")
+        item.setEnabled(False)
+        menu.addAction(item)
+
         if enabled:
-            image = "tray_image/tray_enabled.png"
-            menu_item = 'Disable'
+            item = QAction(self.__parent)
+            item.setText("Disable")
+            item.triggered.connect(lambda: self.__toggle_enabled())
 
         else:
-            image = "tray_image/tray_disabled.png"
-            menu_item = 'Enable'
+            item = QAction(self.__parent)
+            item.setText("Enable")
+            item.triggered.connect(lambda: self.__toggle_enabled())
 
-        image = Image.open(image)
-        menu_items = [
-            MenuItem('PyMacro', lambda: None, enabled=False),
-            MenuItem(menu_item, lambda: self.__toggle_activated()),
-            MenuItem('Open logs', lambda: subprocess.Popen(f"\"{os.getcwd()}\\latest.log\"", shell=True)),
-            MenuItem('Exit', self.__close)
-        ]
+        menu.addAction(item)
 
+        item = QAction(self.__parent)
+        item.setText("Open macros folder")
+        item.triggered.connect(lambda: self.__open_folder())
+        menu.addAction(item)
+
+        item = QAction(self.__parent)
+        item.setText("Open logs")
+        item.triggered.connect(lambda: self.__open_logs())
+        menu.addAction(item)
+
+        item = QAction(self.__parent)
+        item.setText("Exit")
+        item.triggered.connect(lambda: self.__exit())
+        menu.addAction(item)
+
+        self.tray.setContextMenu(menu)
+
+    def run_tray(self):
+        self.__app.exec_()
+
+    def __toggle_enabled(self):
+        if self.enabled:
+            self.enabled = False
+            self.tray.setIcon(QIcon("tray_image/tray_disabled.png"))
+            self.__build_menu(enabled=False)
+            self.tray.showMessage("PyMacro", "PyMacro disabled")
+
+        else:
+            self.enabled = True
+            self.tray.setIcon(QIcon("tray_image/tray_enabled.png"))
+            self.__build_menu(enabled=True)
+            self.tray.showMessage("PyMacro", "PyMacro enabled")
+
+    @staticmethod
+    def __open_logs():
         if sys.platform == "win32":
-            menu_items.insert(2, MenuItem('Open macros folder',
-                                          lambda: subprocess.call(f"explorer \"{os.getcwd()}\\macros\"", shell=True)))
+            subprocess.Popen(f"\"{os.getcwd()}\\latest.log\"", shell=True)
 
-        menu = pystray.Menu(*tuple(menu_items))
+        #  TODO FOR OTHER OS
 
-        if self.icon is None:
-            self.icon = pystray.Icon("PyMacro", image, "PyMacro - By picasso2005", menu)
+    @staticmethod
+    def __open_folder():
+        if sys.platform == "win32":
+            subprocess.Popen(f"explorer \"{os.getcwd()}\\macros\"", shell=True)
 
-            self.icon.run()
+        #  TODO FOR OTHER OS
 
-        else:
-            self.icon.icon = image
-            self.icon.menu = menu
-
-    def __toggle_activated(self):
-        with open(self.json_path, "r") as f:
-            activated = json.loads(f.read())['activated']
-
-        if activated:
-            with open(self.json_path, "w") as f:
-                f.write(json.dumps({'activated': False}, indent=4))
-
-            self.create_tray(False)
-
-        else:
-            with open(self.json_path, "w") as f:
-                f.write(json.dumps({'activated': True}, indent=4))
-
-            self.create_tray(True)
-
-    def __close(self):
-        self.icon.stop()
+    def __exit(self):
+        self.__app.exit(0)
         self.loop.stop()
