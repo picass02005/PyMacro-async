@@ -8,12 +8,12 @@ from typing import Union, List
 from global_modules import logs
 from global_modules.get_config import get_config
 
-__REGISTERED_PATH = f"{get_config('global.temp_dir')}/0-registered.json"
+REGISTERED_PATH = f"{get_config('global.temp_dir')}/0-registered.json"
 
 
 def __clear_registered():
     logs.info("module_manager", "Unloading all registered")
-    with open(__REGISTERED_PATH, "w") as f:
+    with open(REGISTERED_PATH, "w") as f:
         f.write("{}")
 
 
@@ -32,7 +32,7 @@ def register(window: Union[str, List[str]], key: str):
 
             return None
 
-        with open(__REGISTERED_PATH, "r") as f:
+        with open(REGISTERED_PATH, "r") as f:
             actual_json = json.loads(f.read())
 
         if isinstance(window, str):
@@ -53,7 +53,7 @@ def register(window: Union[str, List[str]], key: str):
 
             logs.info("macro_manager", f"Function {actual_json[w][key]} registered for window {w} and key {key}")
 
-        with open(__REGISTERED_PATH, "w") as f:
+        with open(REGISTERED_PATH, "w") as f:
             f.write(json.dumps(actual_json, indent=4))
 
         return wrapper
@@ -77,12 +77,16 @@ def reload_all():
 
 
 def disable_all_macros_for_window(window: str):
-    logs.info("macro_manager", f"Disabled all macros for window {window}")
-
-    with open(__REGISTERED_PATH, "r") as f:
+    with open(REGISTERED_PATH, "r") as f:
         actual_json = json.loads(f.read())
+
+    if window in actual_json.keys():
+        if actual_json[window] is None:
+            return
+
+    logs.info("macro_manager", f"Disabled all macros for window {window}")
 
     actual_json[window] = None
 
-    with open(__REGISTERED_PATH, "w") as f:
+    with open(REGISTERED_PATH, "w") as f:
         f.write(json.dumps(actual_json, indent=4))
