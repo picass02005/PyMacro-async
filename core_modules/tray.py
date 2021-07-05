@@ -85,7 +85,7 @@ class Tray:
     @staticmethod
     def __open_logs():
         if sys.platform == "win32":
-            subprocess.Popen(f"\"{os.getcwd()}\\latest.log\"", shell=True)
+            subprocess.Popen(f"\"{os.getcwd()}\\{logs.LOG_PATH}\"", shell=True)
 
         #  TODO FOR OTHER OS
 
