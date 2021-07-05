@@ -4,6 +4,7 @@ import shutil
 import string
 import time
 
+from global_modules import logs
 from global_modules.get_config import get_config
 
 if not os.path.isdir(get_config("global.temp_dir")):
@@ -42,6 +43,7 @@ def create_random_dir(base_name: str = "", time_: int = 10) -> str:
 
         if not os.path.exists(f"{tmp}{os.sep}{time_}-{base_name}{id_}"):
             os.mkdir(f"{tmp}{os.sep}{time_}-{base_name}{id_}")
+            logs.info("temp_manager", f"Created dir: {tmp}{os.sep}{time_}-{base_name}{id_}")
             return f"{tmp}{os.sep}{time_}-{base_name}{id_}"
 
 
@@ -69,6 +71,7 @@ def create_random_file(base_name: str = "", extension: str = "", time_: int = 10
         if not os.path.exists(f"{tmp}{os.sep}{time_}-{base_name}{id_}{extension}"):
             with open(f"{tmp}{os.sep}{time_}-{base_name}{id_}{extension}", "w"):
                 pass
+            logs.info("temp_manager", f"Created file: {tmp}{os.sep}{time_}-{base_name}{id_}{extension}")
 
             return f"{tmp}{os.sep}{time_}-{base_name}{id_}{extension}"
 
@@ -93,7 +96,7 @@ def purge_temp(all_: bool = False) -> None:
                     max_timestamp = time.time() - (int(i.split("-")[0])*60)
 
                     if os.stat(f"{dir_}{os.sep}{i}").st_mtime < max_timestamp:
-                        print(f"Removed: {dir_}{os.sep}{i}")
+                        logs.info("temp_manager", f"Removed: {dir_}{os.sep}{i}")
                         if os.path.isfile(f"{dir_}{os.sep}{i}"):
                             os.remove(f"{dir_}{os.sep}{i}")
                         else:

@@ -1,6 +1,7 @@
 import asyncio
 import psutil
 
+from global_modules import logs
 from global_modules.temp_manager import purge_temp
 from core_modules.tray import Tray
 
@@ -30,6 +31,7 @@ async def main():
 def create_tray(loop: asyncio.AbstractEventLoop):
     global tray
 
+    logs.info("main", "Launching tray")
     tray = Tray(loop)
     tray.run_tray()
 
@@ -42,6 +44,7 @@ def purge_temp_loop():
 
 
 purge_temp(True)
+logs.clear_logs()
 
 loop_.run_in_executor(None, create_tray, loop_)
 loop_.create_task(main())

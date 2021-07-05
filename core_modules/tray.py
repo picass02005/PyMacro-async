@@ -6,6 +6,8 @@ import sys
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+from global_modules import logs
+
 
 class Tray:
     def __init__(self, loop: asyncio.AbstractEventLoop):
@@ -70,13 +72,15 @@ class Tray:
             self.enabled = False
             self.tray.setIcon(QIcon("tray_image/tray_disabled.png"))
             self.__build_menu(enabled=False)
-            self.tray.showMessage("PyMacro", "PyMacro disabled")
+
+            logs.info("tray", "Macros disabled")
 
         else:
             self.enabled = True
             self.tray.setIcon(QIcon("tray_image/tray_enabled.png"))
             self.__build_menu(enabled=True)
-            self.tray.showMessage("PyMacro", "PyMacro enabled")
+
+            logs.info("tray", "Macros enabled")
 
     @staticmethod
     def __open_logs():
@@ -95,3 +99,7 @@ class Tray:
     def __exit(self):
         self.__app.exit(0)
         self.loop.stop()
+
+        logs.info("tray", "Exiting app")
+
+        exit(0)
