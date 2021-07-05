@@ -17,7 +17,7 @@ def get_config(config_key: str) -> Any:
             config = json.load(f)
 
     else:
-        with open(f"Cogs{os.sep}{module}{os.sep}config.json", "r") as f:
+        with open(f"macros{os.sep}{module}{os.sep}config.json", "r") as f:
             config = json.load(f)
 
     while config_key:

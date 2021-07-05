@@ -1,6 +1,8 @@
 import time
 
-LOG_PATH = f"temp/0-latest.log"
+from global_modules.get_config import get_config
+
+LOG_PATH = f"{get_config('global.temp_dir')}/0-latest.log"
 
 
 def info(module: str, log: str):

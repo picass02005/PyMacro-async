@@ -2,6 +2,7 @@ import asyncio
 import psutil
 
 from global_modules import logs
+from global_modules.macro_manager import __clear_registered, load_all
 from global_modules.temp_manager import purge_temp
 from core_modules.tray import Tray
 
@@ -45,6 +46,8 @@ def purge_temp_loop():
 
 purge_temp(True)
 logs.clear_logs()
+__clear_registered()
+load_all()
 
 loop_.run_in_executor(None, create_tray, loop_)
 loop_.create_task(main())
