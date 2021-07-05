@@ -62,11 +62,13 @@ def register(window: Union[str, List[str]], key: str):
 
 
 def load_all():
+    logs.info("macro_manager", f"{'='*10} Registering macros {'='*10}")
     for i in os.listdir("macros"):
-        logs.info("macro_manager", f"Registering macros in macros/{i}/main")
+        logs.info("macro_manager", f"--- Registering macros in macros/{i}/main.py ---")
         importlib.import_module(f"macros.{i}.main")
         del sys.modules[f"macros.{i}.main"]
         gc.collect()
+    logs.info("macro_manager", '='*40)
 
 
 def reload_all():

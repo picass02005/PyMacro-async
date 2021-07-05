@@ -7,6 +7,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 from global_modules import logs
+from global_modules.macro_manager import reload_all
 
 
 class Tray:
@@ -45,6 +46,11 @@ class Tray:
             item.setText("Enable")
             item.triggered.connect(lambda: self.__toggle_enabled())
 
+        menu.addAction(item)
+
+        item = QAction(self.__parent)
+        item.setText("Reload registered macros")
+        item.triggered.connect(lambda: reload_all())
         menu.addAction(item)
 
         item = QAction(self.__parent)
