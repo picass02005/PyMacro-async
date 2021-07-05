@@ -3,6 +3,7 @@ import json
 import importlib
 import os
 import sys
+from typing import Union, List
 
 from global_modules import logs
 from global_modules.get_config import get_config
@@ -16,9 +17,10 @@ def __clear_registered():
         f.write("{}")
 
 
-def register(window: str, key: str):
+def register(window: Union[str, List[str]], key: str):
     """
-    :param window: The window associated to the macro. Can be set to "default" to use it on every window if this hotkey isn't used for this window
+    :param window: The window associated to the macro. Can be set to "default" to use it on every window if this
+    hotkey isn't used for this window. Can be a list to allow multiple window
     :param key: The hotkey associated to the macro
     :return: None
     """
@@ -33,16 +35,23 @@ def register(window: str, key: str):
         with open(__REGISTERED_PATH, "r") as f:
             actual_json = json.loads(f.read())
 
-        if window not in actual_json.keys():
-            actual_json.update({window: {}})
+        if isinstance(window, str):
+            windows = [window]
 
-        if key in actual_json[window].keys():
-            if actual_json[window][key] == f"{function.__module__}.{function.__name__}":
-                return wrapper
+        else:
+            windows = window
 
-        actual_json[window][key] = f"{function.__module__}.{function.__name__}"
+        for w in windows:
+            if w not in actual_json.keys():
+                actual_json.update({w: {}})
 
-        logs.info("macro_manager", f"Function {actual_json[window][key]} registered for window {window} and key {key}")
+            if key in actual_json[w].keys():
+                if actual_json[w][key] == f"{function.__module__}.{function.__name__}":
+                    return wrapper
+
+            actual_json[w][key] = f"{function.__module__}.{function.__name__}"
+
+            logs.info("macro_manager", f"Function {actual_json[w][key]} registered for window {w} and key {key}")
 
         with open(__REGISTERED_PATH, "w") as f:
             f.write(json.dumps(actual_json, indent=4))
