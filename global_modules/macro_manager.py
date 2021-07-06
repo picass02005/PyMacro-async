@@ -65,7 +65,8 @@ def load_all():
     logs.info("macro_manager", f"{'='*10} Registering macros {'='*10}")
     for i in os.listdir("macros"):
         logs.info("macro_manager", f"--- Registering macros in macros/{i}/main.py ---")
-        importlib.import_module(f"macros.{i}.main")
+        module = importlib.import_module(f"macros.{i}.main")
+        importlib.reload(module)
         del sys.modules[f"macros.{i}.main"]
         gc.collect()
     logs.info("macro_manager", '='*40)

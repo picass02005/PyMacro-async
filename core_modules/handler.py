@@ -17,9 +17,10 @@ class Handler:
 
         self.actual_loaded = {}
 
-        self.__get_registered_for_window()
+        logs.info("handler", f"Loading macros for window {self.window}")
+        self.__update_registered_for_window()
 
-    def __get_registered_for_window(self):
+    def __update_registered_for_window(self):
         with open(self.__REGISTERED_PATH, "r") as f:
             actual_json = json.loads(f.read())
 
@@ -48,7 +49,7 @@ class Handler:
             try:
                 callback = eval(f"module.{value.split('.')[-1]}")
 
-            except AttributeError as err:
+            except AttributeError:
                 return logs.error("handler", f"Function {value} not found")
 
             tmp.update({key: callback})
@@ -57,7 +58,17 @@ class Handler:
         self.actual_loaded.update(tmp)
 
     def update(self):
-        pass  # TODO
+        if not self.tray.enabled:
+            if self.actual_loaded:
+                self.actual_loaded = {}
+                self.window = None
+                logs.info("handler", "Actually loaded cleared")
+                return
+
+        if self.window != (window := get_window()):
+            logs.info("handler", f"Window changed from {self.window} to {window}, reloading macros...")
+            self.window = window
+            self.__update_registered_for_window()
 
 
 Handler(Tray(asyncio.get_event_loop()))
