@@ -12,12 +12,12 @@ class Handler:
         from global_modules.macro_manager import REGISTERED_PATH
         self.__REGISTERED_PATH = REGISTERED_PATH
 
-        self.tray = tray
-        self.window = get_window()
+        self.__tray = tray
+        self.__window_name = get_window()
 
         self.actual_loaded = {}
 
-        logs.info("handler", f"Loading macros for window {self.window}")
+        logs.info("handler", f"Loading macros for window {self.__window_name}")
         self.__update_registered_for_window()
 
     def __update_registered_for_window(self):
@@ -30,7 +30,7 @@ class Handler:
             actual_loaded.update(actual_json["default"].items())
 
         for i in actual_json.keys():
-            if i.lower() in self.window.lower():
+            if i.lower() in self.__window_name.lower():
                 if actual_json[i] is None:
                     self.actual_loaded = {}
                     return
@@ -58,16 +58,16 @@ class Handler:
         self.actual_loaded.update(tmp)
 
     def update(self):
-        if not self.tray.enabled:
+        if not self.__tray.enabled:
             if self.actual_loaded:
                 self.actual_loaded = {}
-                self.window = None
+                self.__window_name = None
                 logs.info("handler", "Actually loaded cleared")
                 return
 
-        if self.window != (window := get_window()):
-            logs.info("handler", f"Window changed from {self.window} to {window}, reloading macros...")
-            self.window = window
+        if self.__window_name != (window := get_window()):
+            logs.info("handler", f"Window changed from {self.__window_name} to {window}, reloading macros...")
+            self.__window_name = window
             self.__update_registered_for_window()
 
 
