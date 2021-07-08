@@ -11,7 +11,7 @@ if not os.path.isdir(get_config("global.temp_dir")):
     os.mkdir(get_config("global.temp_dir"))
 
 
-def create_random_string(length: int = 32, contain_digits: bool = False) -> str:
+def __create_random_string(length: int = 32, contain_digits: bool = False) -> str:
     """
     :param length: The length of the random string
     :param contain_digits: If set to True, the random string will contain digits
@@ -39,7 +39,7 @@ def create_random_dir(base_name: str = "", time_: int = 10) -> str:
     tmp = get_config("global.temp_dir")
 
     while True:
-        id_ = create_random_string()
+        id_ = __create_random_string()
 
         if not os.path.exists(f"{tmp}{os.sep}{time_}-{base_name}{id_}"):
             os.mkdir(f"{tmp}{os.sep}{time_}-{base_name}{id_}")
@@ -66,7 +66,7 @@ def create_random_file(base_name: str = "", extension: str = "", time_: int = 10
     tmp = get_config("global.temp_dir")
 
     while True:
-        id_ = create_random_string()
+        id_ = __create_random_string()
 
         if not os.path.exists(f"{tmp}{os.sep}{time_}-{base_name}{id_}{extension}"):
             with open(f"{tmp}{os.sep}{time_}-{base_name}{id_}{extension}", "w"):

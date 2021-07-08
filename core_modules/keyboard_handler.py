@@ -1,8 +1,8 @@
 import asyncio
 from typing import Union
 
-from pynput.keyboard import Key, KeyCode, Listener
 import keyboard
+from pynput.keyboard import Key, KeyCode, Listener
 
 from core_modules.macro_handler import MacroHandler
 from core_modules.tray import Tray
@@ -15,7 +15,7 @@ class KeyboardHandler:
         self.__tray = tray
         self.__loop = loop
 
-        self.running = {}
+        self.__running = {}
 
         listener = Listener(on_press=self.__key_press_callback)
         listener.start()
@@ -44,30 +44,30 @@ class KeyboardHandler:
                 macro = self.__macro_handler.actual_loaded[macro_key]
                 if macro['loop']:
                     key_running = f"{macro_key} {macro['callback']['location']}"
-                    if key_running in self.running.keys():
-                        task = self.running[key_running]['task']
+                    if key_running in self.__running.keys():
+                        task = self.__running[key_running]['task']
                         task.cancel()
                         logs.info("keyboard_handler", f"Macro {macro['callback']['location']} stopped due to user "
                                                       f"input")
-                        self.running.pop(key_running)
+                        self.__running.pop(key_running)
 
                     else:
                         logs.info("keyboard_handler", f"Macro {macro['callback']['location']} running in loop")
-                        task = self.__loop.create_task(self.create_macro_loop_task_builder(macro['callback']['func']))
-                        self.running.update({key_running: {'task': task, 'location': macro['callback']['location']}})
+                        task = self.__loop.create_task(self.__create_macro_loop_task_builder(macro['callback']['func']))
+                        self.__running.update({key_running: {'task': task, 'location': macro['callback']['location']}})
 
                 else:
-                    self.__loop.create_task(self.create_macro_task_builder(macro['callback']['func']))
+                    self.__loop.create_task(self.__create_macro_task_builder(macro['callback']['func']))
                     logs.info("keyboard_handler", f"Macro {macro['callback']['location']} running")
 
     @staticmethod
-    async def create_macro_loop_task_builder(coro):
+    async def __create_macro_loop_task_builder(coro):
         while True:
             await coro()
             await asyncio.sleep(0)  # Needed or the program freeze
 
     @staticmethod
-    async def create_macro_task_builder(coro):
+    async def __create_macro_task_builder(coro):
         await coro()
 
     @staticmethod
@@ -89,10 +89,10 @@ class KeyboardHandler:
         if self.__macro_handler.just_updated_loaded:
             self.__macro_handler.just_updated_loaded = False
 
-            running_bkp = self.running.copy()
+            running_bkp = self.__running.copy()
             for key, item in running_bkp.items():
-                task = self.running[key]['task']
+                task = self.__running[key]['task']
                 task.cancel()
-                logs.info("keyboard_handler", f"Macro {self.running[key]['location']} stopped running due to window "
+                logs.info("keyboard_handler", f"Macro {self.__running[key]['location']} stopped running due to window "
                                               f"change")
-                self.running.pop(key)
+                self.__running.pop(key)

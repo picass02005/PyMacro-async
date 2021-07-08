@@ -1,9 +1,10 @@
 import asyncio
 import gc
-import json
 import importlib
+import json
 import os
 import sys
+from typing import Callable
 from typing import Union, List
 
 from global_modules import logs
@@ -12,13 +13,17 @@ from global_modules.get_config import get_config
 REGISTERED_PATH = f"{get_config('global.temp_dir')}/0-registered.json"
 
 
-def __clear_registered():
+def __clear_registered() -> None:
+    """
+    :return: None
+    """
+
     logs.info("module_manager", "Unloading all registered")
     with open(REGISTERED_PATH, "w") as f:
         f.write("{}")
 
 
-def register(window: Union[str, List[str]], key: str, loop: bool = False):
+def register(window: Union[str, List[str]], key: str, loop: bool = False) -> Union[None, Callable]:
     """
     :param window: The window associated to the macro. Can be set to "default" to use it on every window if this
     hotkey isn't used for this window. Can be a list to allow multiple window
@@ -26,6 +31,7 @@ def register(window: Union[str, List[str]], key: str, loop: bool = False):
     :param loop: Set it to True if you want your macro to loop until you press a 2nd time the key
     :return: None
     """
+
     def decorator(function):
         async def wrapper(*args, **kwargs):
             await function(*args, **kwargs)
@@ -66,7 +72,11 @@ def register(window: Union[str, List[str]], key: str, loop: bool = False):
     return decorator
 
 
-def load_all():
+def load_all() -> None:
+    """
+    :return: None
+    """
+
     logs.info("macro_manager", f"{'='*10} Registering macros {'='*10}")
     for i in os.listdir("macros"):
         logs.info("macro_manager", f"--- Registering macros in macros/{i}/main.py ---")
@@ -77,12 +87,21 @@ def load_all():
     logs.info("macro_manager", '='*40)
 
 
-def reload_all():
+def reload_all() -> None:
+    """
+    :return: None
+    """
+
     __clear_registered()
     load_all()
 
 
-def disable_all_macros_for_window(window: str):
+def disable_all_macros_for_window(window: str) -> None:
+    """
+    :param window: The window you want to disable all macros
+    :return: None
+    """
+
     with open(REGISTERED_PATH, "r") as f:
         actual_json = json.loads(f.read())
 

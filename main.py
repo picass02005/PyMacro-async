@@ -5,11 +5,11 @@ import psutil
 
 from core_modules.keyboard_handler import KeyboardHandler
 from core_modules.macro_handler import MacroHandler
+from core_modules.tray import Tray
 from global_modules import logs
 from global_modules.get_config import get_config
 from global_modules.macro_manager import __clear_registered, load_all
 from global_modules.temp_manager import purge_temp
-from core_modules.tray import Tray
 
 # ================================= Set the program priority below normal if possible ==================================
 try:
@@ -94,6 +94,5 @@ loop_.run_forever()
 
 # TODO: Compatibility with linux
 # TODO: Readme
-# TODO: verify than no useless code & packages are remaining
 # TODO: create_example_macros.py
 # TODO: installer

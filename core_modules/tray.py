@@ -12,7 +12,7 @@ from global_modules.macro_manager import reload_all
 
 class Tray:
     def __init__(self, loop: asyncio.AbstractEventLoop):
-        self.loop = loop
+        self.__loop = loop
 
         self.__app = QApplication([])
         self.__app.setQuitOnLastWindowClosed(False)
@@ -104,7 +104,7 @@ class Tray:
 
     def __exit(self):
         self.__app.exit(0)
-        self.loop.stop()
+        self.__loop.stop()
 
         logs.info("tray", "Exiting app")
 
