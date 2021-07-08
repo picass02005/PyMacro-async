@@ -91,3 +91,10 @@ load_all()
 loop_.run_in_executor(None, create_tray, loop_)
 loop_.create_task(main())
 loop_.run_forever()
+
+# TODO: Compatibility with linux
+# TODO: Readme
+# TODO: License
+# TODO: verify than no useless code & packages are remaining
+# TODO: create_example_macros.py
+# TODO: installer
