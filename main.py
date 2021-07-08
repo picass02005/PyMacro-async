@@ -94,5 +94,4 @@ loop_.run_forever()
 
 # TODO: Compatibility with linux
 # TODO: Readme
-# TODO: create_example_macros.py
 # TODO: installer
