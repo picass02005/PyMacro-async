@@ -17,11 +17,12 @@ def __clear_registered():
         f.write("{}")
 
 
-def register(window: Union[str, List[str]], key: str):
+def register(window: Union[str, List[str]], key: str, loop: bool = False):
     """
     :param window: The window associated to the macro. Can be set to "default" to use it on every window if this
     hotkey isn't used for this window. Can be a list to allow multiple window
     :param key: The hotkey associated to the macro
+    :param loop: Set it to True if you want your macro to loop until you press a 2nd time the key
     :return: None
     """
     def decorator(function):
@@ -46,10 +47,10 @@ def register(window: Union[str, List[str]], key: str):
                 actual_json.update({w: {}})
 
             if key in actual_json[w].keys():
-                if actual_json[w][key] == f"{function.__module__}.{function.__name__}":
+                if actual_json[w][key] == {"callback": f"{function.__module__}.{function.__name__}", "loop": loop}:
                     return wrapper
 
-            actual_json[w][key] = f"{function.__module__}.{function.__name__}"
+            actual_json[w][key] = {"callback": f"{function.__module__}.{function.__name__}", "loop": loop}
 
             logs.info("macro_manager", f"Function {actual_json[w][key]} registered for window {w} and key {key}")
 

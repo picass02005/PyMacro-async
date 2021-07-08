@@ -40,19 +40,19 @@ class Handler:
         tmp = {}
         for key, value in actual_loaded.items():
             try:
-                module = importlib.import_module(".".join(value.split(".")[:-1]))
+                module = importlib.import_module(".".join(value['callback'].split(".")[:-1]))
                 importlib.reload(module)
 
             except ModuleNotFoundError:
-                return logs.error("handler", f"Module {'.'.join(value.split('.')[:-1])} not found")
+                return logs.error("handler", f"Module {'.'.join(value['callback'].split('.')[:-1])} not found")
 
             try:
-                callback = eval(f"module.{value.split('.')[-1]}")
+                callback = eval(f"module.{value['callback'].split('.')[-1]}")
 
             except AttributeError:
-                return logs.error("handler", f"Function {value} not found")
+                return logs.error("handler", f"Function {value['callback']} not found")
 
-            tmp.update({key: callback})
+            tmp.update({key: {'callback': callback, 'loop': value['loop']}})
 
         self.actual_loaded = {}
         self.actual_loaded.update(tmp)
