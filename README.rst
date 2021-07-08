@@ -46,13 +46,14 @@ Next, you need a script to launch it.
 
 **Linux / MacOS**
 
+Rename **main.py** into **main.pyw**
 Create a file named **run_pymacro.sh** and copy paste the following:
 
 .. code:: sh
 
     cd /path/to/your/PyMacro
     source venv/bin/activate
-    pythonw3 main.py &
+    python3 main.pyw &
 
 Change the path in the cd to your PyMacro's folder
 
@@ -130,7 +131,6 @@ You have temp_manager.py in global_modules to create temp files / temp folders.
 
 
 Usage:
-
 
 .. code:: py
     from global_modules import temp_manager
