@@ -47,6 +47,7 @@ Next, you need a script to launch it.
 **Linux / MacOS**
 
 Rename **main.py** into **main.pyw**
+
 Create a file named **run_pymacro.sh** and copy paste the following:
 
 .. code:: sh
