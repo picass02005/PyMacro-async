@@ -36,6 +36,10 @@ class Tray:
         item.setEnabled(False)
         menu.addAction(item)
 
+        item = QAction(self.__parent)
+        item.setSeparator(True)
+        menu.addAction(item)
+
         if enabled:
             item = QAction(self.__parent)
             item.setText("Disable")
@@ -54,6 +58,10 @@ class Tray:
         menu.addAction(item)
 
         item = QAction(self.__parent)
+        item.setSeparator(True)
+        menu.addAction(item)
+
+        item = QAction(self.__parent)
         item.setText("Open macros folder")
         item.triggered.connect(lambda: self.__open_folder())
         menu.addAction(item)
@@ -61,6 +69,10 @@ class Tray:
         item = QAction(self.__parent)
         item.setText("Open logs")
         item.triggered.connect(lambda: self.__open_logs())
+        menu.addAction(item)
+
+        item = QAction(self.__parent)
+        item.setSeparator(True)
         menu.addAction(item)
 
         item = QAction(self.__parent)
