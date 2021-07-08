@@ -1,2 +1,4 @@
 psutil>=5.8.0
 PyQt5>=5.15.4
+pynput>=1.7.3
+keyboard>=0.13.5

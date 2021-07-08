@@ -7,7 +7,7 @@ from core_modules.tray import Tray
 from global_modules import logs
 
 
-class Handler:
+class MacroHandler:
     def __init__(self, tray: Tray):
         from global_modules.macro_manager import REGISTERED_PATH
         self.__REGISTERED_PATH = REGISTERED_PATH
@@ -16,6 +16,7 @@ class Handler:
         self.__window_name = get_window()
 
         self.actual_loaded = {}
+        self.just_updated_loaded = False  # A variable for the keyboard_handler
 
         logs.info("handler", f"Loading macros for window {self.__window_name}")
         self.__update_registered_for_window()
@@ -52,10 +53,11 @@ class Handler:
             except AttributeError:
                 return logs.error("handler", f"Function {value['callback']} not found")
 
-            tmp.update({key: {'callback': callback, 'loop': value['loop']}})
+            tmp.update({key: {'callback': {"func": callback, "location": value['callback']}, 'loop': value['loop']}})
 
         self.actual_loaded = {}
         self.actual_loaded.update(tmp)
+        self.just_updated_loaded = True
 
     def update(self):
         if not self.__tray.enabled:
@@ -69,6 +71,3 @@ class Handler:
             logs.info("handler", f"Window changed from {self.__window_name} to {window}, reloading macros...")
             self.__window_name = window
             self.__update_registered_for_window()
-
-
-Handler(Tray(asyncio.get_event_loop()))

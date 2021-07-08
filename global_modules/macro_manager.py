@@ -1,3 +1,4 @@
+import asyncio
 import gc
 import json
 import importlib
@@ -21,15 +22,13 @@ def register(window: Union[str, List[str]], key: str, loop: bool = False):
     """
     :param window: The window associated to the macro. Can be set to "default" to use it on every window if this
     hotkey isn't used for this window. Can be a list to allow multiple window
-    :param key: The hotkey associated to the macro
+    :param key: The hotkey associated to the macro. '.' mean OR and '+' mean AND
     :param loop: Set it to True if you want your macro to loop until you press a 2nd time the key
     :return: None
     """
     def decorator(function):
-        def wrapper(*args, **kwargs):
-            function(*args, **kwargs)
-
-            gc.collect()
+        async def wrapper(*args, **kwargs):
+            await function(*args, **kwargs)
 
             return None
 
@@ -46,13 +45,18 @@ def register(window: Union[str, List[str]], key: str, loop: bool = False):
             if w not in actual_json.keys():
                 actual_json.update({w: {}})
 
-            if key in actual_json[w].keys():
-                if actual_json[w][key] == {"callback": f"{function.__module__}.{function.__name__}", "loop": loop}:
+            l_key = key.lower()
+            if l_key in actual_json[w].keys():
+                if actual_json[w][l_key] == {"callback": f"{function.__module__}.{function.__name__}", "loop": loop}:
                     return wrapper
 
-            actual_json[w][key] = {"callback": f"{function.__module__}.{function.__name__}", "loop": loop}
-
-            logs.info("macro_manager", f"Function {actual_json[w][key]} registered for window {w} and key {key}")
+            if not asyncio.iscoroutinefunction(function):
+                logs.error("macro_manager", f"Macro defined at {function.__module__}.{function.__name__} isn't a "
+                                            f"coroutine. Define it with 'async def'")
+            else:
+                actual_json[w][l_key] = {"callback": f"{function.__module__}.{function.__name__}", "loop": loop}
+                logs.info("macro_manager", f"Function {actual_json[w][l_key]} registered for window {w} and key "
+                                           f"{l_key}")
 
         with open(REGISTERED_PATH, "w") as f:
             f.write(json.dumps(actual_json, indent=4))
