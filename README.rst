@@ -23,8 +23,8 @@ You need to be in an empty folder with a shell with this directory in current wo
 
     git clone https://github.com/picass02005/PyMacro.git  # If it doesn't work, download it from github directly
 
-    #     Linux / MacOS specific     #
-    # ============================== #
+    #     Linux specific     #
+    # ====================== #
 
     python3 -m pip install virtualenv
     python3 -m venv venv
@@ -33,8 +33,8 @@ You need to be in an empty folder with a shell with this directory in current wo
     mkdir macros
 
 
-    #        Windows specific        #
-    # ============================== #
+    #    Windows specific    #
+    # ====================== #
 
     python -m pip install virtualenv
     python -m venv venv
@@ -44,23 +44,13 @@ You need to be in an empty folder with a shell with this directory in current wo
 
 Next, you need a script to launch it.
 
-**Linux / MacOS**
+**Linux**
 
-Rename **main.py** into **main.pyw**
+Use a service to run it at startup.
 
-Create a file named **run_pymacro.sh** and copy paste the following:
+Nota: your working directory need to be the PyMacro's folder
 
-.. code:: sh
-
-    cd /path/to/your/PyMacro
-    source venv/bin/activate
-    python3 main.pyw &
-
-Change the path in the cd to your PyMacro's folder
-
-Ensure this file to run on startup
-- for linux, you can use systemd
-- for MacOS, you can use launchctl
+If you want help, `RTFM <https://wiki.archlinux.org/title/Systemd>`_
 
 **Windows**
 Create a file named **run_pymacro.bat** and copy paste the following:

@@ -92,4 +92,4 @@ loop_.run_in_executor(None, create_tray, loop_)
 loop_.create_task(main())
 loop_.run_forever()
 
-# TODO: Compatibility with linux
+# TODO: Compatibility with linux => nice, todos, ...
