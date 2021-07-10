@@ -105,14 +105,16 @@ class Tray:
         if sys.platform == "win32":
             subprocess.Popen(f"\"{os.getcwd()}\\{logs.LOG_PATH}\"", shell=True)
 
-        #  TODO FOR OTHER OS
+        elif sys.platform == "linux" or sys.platform == "linux2":
+            subprocess.Popen(f"xdg-open \"{os.getcwd()}/{logs.LOG_PATH}\"", shell=True)
 
     @staticmethod
     def __open_folder():
         if sys.platform == "win32":
             subprocess.Popen(f"explorer \"{os.getcwd()}\\macros\"", shell=True)
 
-        #  TODO FOR OTHER OS
+        elif sys.platform == "linux" or sys.platform == "linux2":
+            subprocess.Popen(f"xdg-open \"{os.getcwd()}/macros\"", shell=True)
 
     def __exit(self):
         self.__app.exit(0)

@@ -13,7 +13,8 @@ Requirements
 ------------
 
 - Python 3.8 or above
-- Works on Windows and Linux (don't have a macos so can't garantee it will work)
+- For linux only: xdotool (can be installed with apt, pacman, dnf, ...)
+- Does not work on MacOS
 
 Installing
 ----------
@@ -49,7 +50,9 @@ Next, you need a script to launch it.
 
 Use a service to run it at startup.
 
-Nota: your working directory need to be the PyMacro's folder
+Nota 1: your working directory need to be the PyMacro's folder
+
+Nota 2: you need to run the handler with root privileges
 
 If you want help, `RTFM <https://wiki.archlinux.org/title/Systemd>`_
 

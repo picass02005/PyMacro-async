@@ -1,12 +1,19 @@
 import asyncio
+import sys
 from typing import Union
 
 import keyboard
+import psutil
 from pynput.keyboard import Key, KeyCode, Listener
 
 from core_modules.macro_handler import MacroHandler
 from core_modules.tray import Tray
 from global_modules import logs
+
+if sys.platform == "linux" or sys.platform == "linux2":
+    if psutil.Process().username() != "root":
+        logs.error("keyboard_handler", "You must run this macro handler as root on linux")
+        exit(1)
 
 
 class KeyboardHandler:

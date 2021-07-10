@@ -1,7 +1,9 @@
 import asyncio
 import gc
+import os
 
 import psutil
+import sys
 
 from core_modules.keyboard_handler import KeyboardHandler
 from core_modules.macro_handler import MacroHandler
@@ -12,11 +14,18 @@ from global_modules.macro_manager import __clear_registered, load_all
 from global_modules.temp_manager import purge_temp
 
 # ================================= Set the program priority below normal if possible ==================================
-try:
-    psutil.Process().nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
+if sys.platform == "win32":
+    try:
+        psutil.Process().nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
 
-except Exception as err:
-    print(type(err), err)
+    except Exception as err:
+        logs.error("core", f"Cannot set process priority below normal: {type(err)}: {err}")
+
+elif sys.platform == "linux" or sys.platform == "linux2":
+    try:
+        psutil.Process().nice(10)
+    except Exception as err:
+        logs.error("core", f"Cannot set nice to 10: {type(err)}: {err}")
 # ======================================================================================================================
 
 loop_ = asyncio.get_event_loop()
@@ -83,13 +92,19 @@ def update_handlers_loop():
     loop.call_later(to, update_handlers_loop)
 
 
-purge_temp(True)
-logs.clear_logs()
-__clear_registered()
-load_all()
+if __name__ == "__main__":
+    if sys.platform == "darwin":
+        logs.error("core", "MacOS not supported")
+        exit(1)
 
-loop_.run_in_executor(None, create_tray, loop_)
-loop_.create_task(main())
-loop_.run_forever()
+    if not os.path.exists("macros"):
+        os.mkdir("macros")
 
-# TODO: Compatibility with linux => nice, todos, ...
+    purge_temp(True)
+    logs.clear_logs()
+    __clear_registered()
+    load_all()
+
+    loop_.run_in_executor(None, create_tray, loop_)
+    loop_.create_task(main())
+    loop_.run_forever()
