@@ -13,6 +13,7 @@ Requirements
 ------------
 
 - Python 3.8 or above
+- Works on Windows and Linux (don't have a macos so can't garantee it will work)
 
 Installing
 ----------
