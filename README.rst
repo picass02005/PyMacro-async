@@ -52,9 +52,9 @@ Use a service to run it at startup.
 
 Nota 1: your working directory need to be the PyMacro's folder
 
-Nota 2: you need to run the handler with root privileges
+Nota 2: On some environments, the process must run with another user than root (or the tray menu won't appear). If it's your case, specify in your service the user
 
-If you want help, `RTFM <https://wiki.archlinux.org/title/Systemd>`_
+If you want help, `RTFM <https://wiki.archlinux.org/title/Systemd>`_ (everything you need to know is here)
 
 **Windows**
 Create a file named **run_pymacro.bat** and copy paste the following:
