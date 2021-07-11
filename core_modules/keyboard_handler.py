@@ -1,19 +1,11 @@
 import asyncio
-import sys
 from typing import Union
 
-import keyboard
-import psutil
 from pynput.keyboard import Key, KeyCode, Listener
 
 from core_modules.macro_handler import MacroHandler
 from core_modules.tray import Tray
 from global_modules import logs
-
-if sys.platform == "linux" or sys.platform == "linux2":
-    if psutil.Process().username() != "root":
-        logs.error("keyboard_handler", "You must run this macro handler as root on linux")
-        exit(1)
 
 
 class KeyboardHandler:
@@ -24,10 +16,15 @@ class KeyboardHandler:
 
         self.__running = {}
 
-        listener = Listener(on_press=self.__key_press_callback)
+        self.__pressed = []
+
+        listener = Listener(on_press=self.__key_press_callback, on_release=self.__key_release_callback)
         listener.start()
 
     def __key_press_callback(self, key: Union[Key, KeyCode]):
+        if not self.__is_key_pressed(self.__get_key_name(key)):
+            self.__pressed.append(self.__get_key_name(key))
+
         if not self.__tray.enabled:
             return
 
@@ -67,6 +64,10 @@ class KeyboardHandler:
                     self.__loop.create_task(self.__create_macro_task_builder(macro['callback']['func']))
                     logs.info("keyboard_handler", f"Macro {macro['callback']['location']} running")
 
+    def __key_release_callback(self, key: Union[Key, KeyCode]):
+        if self.__is_key_pressed(self.__get_key_name(key)):
+            self.__pressed.remove(self.__get_key_name(key))
+
     @staticmethod
     async def __create_macro_loop_task_builder(coro):
         while True:
@@ -77,20 +78,22 @@ class KeyboardHandler:
     async def __create_macro_task_builder(coro):
         await coro()
 
-    @staticmethod
-    def __is_dict_key_pressed(dict_key: str) -> bool:
+    def __is_dict_key_pressed(self, dict_key: str) -> bool:
         sub_keys = dict_key.split(".")
 
         for i in sub_keys:
             call = True
             for j in i.split("+"):
-                if not keyboard.is_pressed(j):
+                if not self.__is_key_pressed(j):
                     call = False
 
             if call:
                 return True
 
         return False
+
+    def __is_key_pressed(self, key: str) -> bool:
+        return key in self.__pressed
 
     def update(self):
         if self.__macro_handler.just_updated_loaded:
@@ -103,3 +106,15 @@ class KeyboardHandler:
                 logs.info("keyboard_handler", f"Macro {self.__running[key]['location']} stopped running due to window "
                                               f"change")
                 self.__running.pop(key)
+
+    @staticmethod
+    def __get_key_name(key: Union[Key, KeyCode]) -> str:
+        if isinstance(key, Key):
+            return key.name
+
+        elif isinstance(key, KeyCode):
+            if key.char is not None:
+                return key.char
+
+            else:
+                return str(key.vk)
