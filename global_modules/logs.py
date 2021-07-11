@@ -1,9 +1,19 @@
+import os
 import sys
 import time
 
 from global_modules.get_config import get_config
 
 LOG_PATH = f"{get_config('global.temp_dir')}/0-latest.log"
+
+
+def __check_log_file():
+    if not os.path.exists(get_config('global.temp_dir')):
+        os.mkdir(get_config('global.temp_dir'))
+
+    if not os.path.exists(LOG_PATH):
+        with open(LOG_PATH, "w"):
+            pass
 
 
 def info(module: str, log: str) -> None:
@@ -63,3 +73,6 @@ def clear_logs() -> None:
 
     with open(LOG_PATH, "w"):
         pass
+
+
+__check_log_file()
