@@ -1,3 +1,4 @@
+import gc
 import importlib
 import json
 
@@ -17,7 +18,7 @@ class MacroHandler:
         self.actual_loaded = {}
         self.just_updated_loaded = False  # A variable for the keyboard_handler
 
-        logs.info("handler", f"Loading macros for window {self.__window_name}")
+        logs.info("macro_handler", f"Loading macros for window {self.__window_name}")
         self.__update_registered_for_window()
 
     def __update_registered_for_window(self):
@@ -44,13 +45,13 @@ class MacroHandler:
                 importlib.reload(module)
 
             except ModuleNotFoundError:
-                return logs.error("handler", f"Module {'.'.join(value['callback'].split('.')[:-1])} not found")
+                return logs.error("macro_handler", f"Module {'.'.join(value['callback'].split('.')[:-1])} not found")
 
             try:
                 callback = eval(f"module.{value['callback'].split('.')[-1]}")
 
             except AttributeError:
-                return logs.error("handler", f"Function {value['callback']} not found")
+                return logs.error("macro_handler", f"Function {value['callback']} not found")
 
             tmp.update({key: {'callback': {"func": callback, "location": value['callback']}, 'loop': value['loop']}})
 
@@ -63,10 +64,12 @@ class MacroHandler:
             if self.actual_loaded:
                 self.actual_loaded = {}
                 self.__window_name = None
-                logs.info("handler", "Actually loaded cleared")
+                logs.info("macro_handler", "Actually loaded cleared")
                 return
 
         if self.__window_name != (window := get_window()):
-            logs.info("handler", f"Window changed from {self.__window_name} to {window}, reloading macros...")
+            logs.info("macro_handler", f"Window changed from {self.__window_name} to {window}, reloading macros...")
             self.__window_name = window
             self.__update_registered_for_window()
+
+            gc.collect()
