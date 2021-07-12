@@ -18,7 +18,7 @@ def __clear_registered() -> None:
     :return: None
     """
 
-    logs.info("module_manager", "Unloading all registered")
+    logs.info("macro_manager", "Unloading all registered")
     with open(REGISTERED_PATH, "w") as f:
         f.write("{}")
 
