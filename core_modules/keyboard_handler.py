@@ -79,11 +79,11 @@ class KeyboardHandler:
         await coro()
 
     def __is_dict_key_pressed(self, dict_key: str) -> bool:
-        sub_keys = dict_key.split(".")
+        sub_keys = dict_key.split("+")
 
         for i in sub_keys:
             call = True
-            for j in i.split("+"):
+            for j in i.split("."):
                 if not self.__is_key_pressed(j):
                     call = False
 

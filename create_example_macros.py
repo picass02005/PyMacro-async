@@ -10,7 +10,7 @@ with open(f"{example1}/main.py", "a") as f:
             "@register(window=[\"default\"], key=\"a\", loop=False)\n"
             "async def a():\n"
             "    print(\"You pressed A\")\n\n\n"
-            "@register(window=[\"discord\"], key=\"d+b.s\", loop=False)  # OR prioritize over AND\n"
+            "@register(window=[\"discord\"], key=\"d.b+s\", loop=False)  # OR prioritize over AND\n"
             "async def discord():\n"
             "    print(\"You pressed (D and B) or S while being in discord\")\n\n\n"
             "disable_all_macros_for_window(\"explorer\")  # this will disable all macros when being in explorer\n")

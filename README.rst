@@ -6,7 +6,7 @@ Features
 
 - Macro handler fully asynchronous
 - Can create macros that loop while you press the button a 2nd time
-- Can create hooks with multiple keys with "+" (and) and "." (or)
+- Can create hooks with multiple keys with "." (and) and "+" (or)
 - Optimized for ram and CPU usage (nota: ensure you have a timeout with loop macros to avoid CPU usage)
 
 Requirements
@@ -111,7 +111,7 @@ Those are the main modules for users.
     This is a decorator used to register a macro. It has 3 parameters:
 
     - window: The window(s) where you want your macro to be working. If you set it to "default" it will work on any window if no window specific macro on same key(s) is defined
-    - key: The key(s) you want to press to activate the macro. The "+" can be used to mean "and" and the "." can be used to mean "or". The or always take priority over the and. Example: "a+b.c" mean "(a and b) or c"
+    - key: The key(s) you want to press to activate the macro. The "." can be used to mean "and" and the "+" can be used to mean "or". The or always take priority over the and. Example: "a.b+c" mean "(a and b) or c"
     - loop: Set it to True to make the macro looping until you press the key a 2nd time. Caution: put a asyncio.sleep of 0.1 seconds at the end of your macro to avoid an excessive cpu usage
 
 - **disable_all_macros_for_window**
