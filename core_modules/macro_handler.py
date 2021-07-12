@@ -1,6 +1,7 @@
 import gc
 import importlib
 import json
+from typing import Coroutine, Union
 
 from core_modules.get_window import get_window
 from core_modules.tray import Tray
@@ -53,7 +54,17 @@ class MacroHandler:
             except AttributeError:
                 return logs.error("macro_handler", f"Function {value['callback']} not found")
 
-            tmp.update({key: {'callback': {"func": callback, "location": value['callback']}, 'loop': value['loop']}})
+            callback = self.__get_callback_from_location(value['callback'])
+            before = self.__get_callback_from_location(value['before']) if value['before'] is not None else None
+            after = self.__get_callback_from_location(value['after']) if value['after'] is not None else None
+
+            if callback is not None:
+                tmp.update({key: {
+                    'callback': {"func": callback, "location": value['callback']},
+                    'before': {"func": before, "location": value['before']},
+                    'after': {"func": after, "location": value['after']},
+                    'loop': value['loop']}
+                })
 
         self.actual_loaded = {}
         self.actual_loaded.update(tmp)
@@ -73,3 +84,18 @@ class MacroHandler:
             self.__update_registered_for_window()
 
             gc.collect()
+
+    @staticmethod
+    def __get_callback_from_location(location) -> Union[Coroutine, None]:
+        try:
+            module = importlib.import_module(".".join(location.split(".")[:-1]))
+            importlib.reload(module)
+
+        except ModuleNotFoundError:
+            return logs.error("macro_handler", f"Module {'.'.join(location.split('.')[:-1])} not found")
+
+        try:
+            return eval(f"module.{location.split('.')[-1]}")
+
+        except AttributeError:
+            return logs.error("macro_handler", f"Function {location} not found")

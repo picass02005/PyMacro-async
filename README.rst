@@ -91,7 +91,8 @@ If you go in main.py, you'll see there is some imports:
 .. code:: py
 
     from global_modules.get_config import get_config
-    from global_modules.macro_manager import register, disable_all_macros_for_window
+    from global_modules.macro_manager import register
+    from global_modules.macro_manager import disable_all_macros_for_window
 
 Those are the main modules for users.
 
@@ -113,6 +114,8 @@ Those are the main modules for users.
     - window: The window(s) where you want your macro to be working. If you set it to "default" it will work on any window if no window specific macro on same key(s) is defined
     - key: The key(s) you want to press to activate the macro. The "." can be used to mean "and" and the "+" can be used to mean "or". The or always take priority over the and. Example: "a.b+c" mean "(a and b) or c"
     - loop: Set it to True to make the macro looping until you press the key a 2nd time. Caution: put a asyncio.sleep of 0.1 seconds at the end of your macro to avoid an excessive cpu usage
+    - before: An async function which will be called before the macro starts (useful with loop=True)
+    - after: An async function which will be called before the macro end (useful with loop=True)
 
 - **disable_all_macros_for_window**
 

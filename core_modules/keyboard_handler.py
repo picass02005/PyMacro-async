@@ -53,30 +53,54 @@ class KeyboardHandler:
                         task.cancel()
                         logs.info("keyboard_handler", f"Macro {macro['callback']['location']} stopped due to user "
                                                       f"input")
+
+                        if macro['after']['func'] is not None:
+                            logs.info("keyboard_handler", f"After {macro['after']['location']} running")
+                            self.__loop.create_task(macro['after']['func']())
+
                         self.__running.pop(key_running)
 
                     else:
-                        logs.info("keyboard_handler", f"Macro {macro['callback']['location']} running in loop")
-                        task = self.__loop.create_task(self.__create_macro_loop_task_builder(macro['callback']['func']))
+                        task = self.__loop.create_task(self.__create_macro_loop_task_builder(macro))
                         self.__running.update({key_running: {'task': task, 'location': macro['callback']['location']}})
 
                 else:
-                    self.__loop.create_task(self.__create_macro_task_builder(macro['callback']['func']))
-                    logs.info("keyboard_handler", f"Macro {macro['callback']['location']} running")
+                    self.__loop.create_task(self.__create_macro_task_builder(macro))
 
     def __key_release_callback(self, key: Union[Key, KeyCode]):
         if self.__is_key_pressed(self.__get_key_name(key)):
             self.__pressed.remove(self.__get_key_name(key))
 
     @staticmethod
-    async def __create_macro_loop_task_builder(coro):
+    async def __create_macro_loop_task_builder(macro):
+        coro = macro['callback']['func']
+        before = macro['before']['func']
+
+        if before:
+            logs.info("keyboard_handler", f"Before {macro['before']['location']} running")
+            await before()
+
+        logs.info("keyboard_handler", f"Macro {macro['callback']['location']} running in loop")
         while True:
             await coro()
             await asyncio.sleep(0)  # Needed or the program freeze
 
     @staticmethod
-    async def __create_macro_task_builder(coro):
+    async def __create_macro_task_builder(macro):
+        coro = macro['callback']['func']
+        before = macro['before']['func']
+        after = macro['after']['func']
+
+        if before is not None:
+            logs.info("keyboard_handler", f"Before {macro['before']['location']} running")
+            await before()
+
+        logs.info("keyboard_handler", f"Macro {macro['callback']['location']} running")
         await coro()
+
+        if after is not None:
+            logs.info("keyboard_handler", f"After {macro['after']['location']} running")
+            await after()
 
     def __is_dict_key_pressed(self, dict_key: str) -> bool:
         sub_keys = dict_key.split("+")

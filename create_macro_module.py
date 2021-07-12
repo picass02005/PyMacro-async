@@ -11,7 +11,8 @@ def create_macro_module(name: str):
     with open(f"macros/{name}/main.py", "w") as f:
         f.write(
             "from global_modules.get_config import get_config\n"
-            "from global_modules.macro_manager import register, disable_all_macros_for_window\n"
+            "from global_modules.macro_manager import disable_all_macros_for_window\n"
+            "from global_modules.macro_manager import register\n"
         )
 
     with open(f"macros/{name}/config.json", "w") as f:

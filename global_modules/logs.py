@@ -38,6 +38,7 @@ def warn(module: str, log: str) -> None:
 
 def error(module: str, log: str) -> None:
     """
+    :rtype: object
     :param module: The module name
     :param log: The error log you want
     :return: None
