@@ -23,7 +23,7 @@ You need to be in an empty folder with a shell with this directory in current wo
 
 .. code:: sh
 
-    git clone https://github.com/picass02005/PyMacro.git  # If it doesn't work, download it from github directly
+    git clone https://github.com/picass02005/PyMacro-async.git  # If it doesn't work, download it from github directly
 
     #     Linux specific     #
     # ====================== #
